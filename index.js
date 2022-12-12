@@ -13,12 +13,7 @@ app.use(cors())
 app.use(express.json())
 
 
-
-
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.PASS}@cluster0.wjypdwg.mongodb.net/?retryWrites=true&w=majority`;
-
 
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -26,15 +21,26 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
     try {
+
+        const itemsCollection = client.db('store').collection('items');
+
         await client.connect()
         console.log('connected')
+       
+        app.post('/items', async (req, res) => {
 
-        app.get('/test', async (req, res) => {
-            res.send('This is test')
+            const item = req.body;
+            const result = itemsCollection.insertOne(item);
+            res.send(result)
+           
         })
-        
 
-   
+        app.get('/items', async (req, res) => {
+
+            const items = await itemsCollection.find({}).toArray()
+            res.send(items)
+           
+        })
     } finally {
 
     }
@@ -43,10 +49,6 @@ async function run() {
 
 
 run().catch(console.dir)
-
-
-
-
 
 app.get('/', async (req, res) => {
     res.send('This is first commit')
