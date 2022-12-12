@@ -28,7 +28,12 @@ async function run() {
     try {
         await client.connect()
         console.log('connected')
-       
+
+        app.get('/test', async (req, res) => {
+            res.send('This is test')
+        })
+        
+
    
     } finally {
 
