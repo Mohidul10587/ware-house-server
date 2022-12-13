@@ -1,7 +1,7 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 require('dotenv').config()
@@ -26,21 +26,55 @@ async function run() {
 
         await client.connect()
         console.log('connected')
-       
+
         app.post('/items', async (req, res) => {
 
             const item = req.body;
             const result = itemsCollection.insertOne(item);
             res.send(result)
-           
+
         })
 
         app.get('/items', async (req, res) => {
 
             const items = await itemsCollection.find({}).toArray()
             res.send(items)
-           
+
         })
+
+
+        app.get('/singleItem/:id', async (req, res) => {
+            const id = req.params.id;
+            const item = await itemsCollection.findOne({ _id: ObjectId(id) });
+            res.send(item)
+
+        })
+
+
+
+        app.put('/updateItemsQuantity/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedObject = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: {
+                    name: updatedObject.name,
+                    price: updatedObject.price,
+                    img: updatedObject.img,
+                    quantity: updatedObject.quantity,
+                    description: updatedObject.description
+
+                }
+            }
+
+            const result = await itemsCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
+
+
+
     } finally {
 
     }
