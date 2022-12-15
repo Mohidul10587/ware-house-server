@@ -50,6 +50,13 @@ async function run() {
 
         })
 
+        app.get('/myItems/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const cursor = itemsCollection.find(query);
+            const items = await cursor.toArray();
+            res.send(items)
+        })
 
 
         app.put('/updateItemsQuantity/:id', async (req, res) => {
@@ -59,11 +66,7 @@ async function run() {
             const options = { upsert: true }
             const updatedDoc = {
                 $set: {
-                    name: updatedObject.name,
-                    price: updatedObject.price,
-                    img: updatedObject.img,
                     quantity: updatedObject.quantity,
-                    description: updatedObject.description
 
                 }
             }
@@ -71,9 +74,6 @@ async function run() {
             const result = await itemsCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
         })
-
-
-
 
     } finally {
 
