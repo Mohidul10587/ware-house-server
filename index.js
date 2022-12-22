@@ -74,6 +74,12 @@ async function run() {
             const result = await itemsCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
         })
+        app.delete('/items/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await itemsCollection.deleteOne(filter);
+            res.send(result);
+        })
 
     } finally {
 
