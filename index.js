@@ -26,6 +26,13 @@ async function run() {
 
         await client.connect()
         console.log('connected')
+        
+           app.post('/jwt', (req, res) =>{
+            const user = req.body;
+            const token = jwt.sign(user, process.env.TOKEN, { expiresIn: '1d'})
+            res.send({token})
+        })  
+
 
         app.post('/items', async (req, res) => {
 
